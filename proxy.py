@@ -14,12 +14,16 @@ session = tls_client.Session(
 
 authentication = {}
 
+context = {"blocked": False}
+
 # Get cloudflare cookies
 authentication["cf_clearance"], authentication["user_agent"] = Cloudflare().get_cf_cookies()
 
 @app.route('/backend-api/conversation', methods=['POST'])
 def conversation():
     try:
+        if context.get("blocked"):
+            return jsonify({"error": "Blocking operation in progress"})
         # Get cookies from request
         cookies = {
             "cf_clearance": authentication["cf_clearance"],
@@ -52,10 +56,11 @@ def conversation():
         # Check status code
         if response.status_code == 403:
             # Get cf_clearance again
+            context["blocked"] = True
             authentication["cf_clearance"], authentication["user_agent"] = Cloudflare().get_cf_cookies()
+            context["blocked"] = False
             # return error
             return jsonify({"error": "Cloudflare token expired. Please wait a few minutes while I refresh"})
-
         # Return response
         return response.text
     except Exception as exc:
