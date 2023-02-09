@@ -2,7 +2,7 @@
 Fetches cookies from chat.openai.com and returns them (Flask)
 """
 from OpenAIAuth.Cloudflare import Cloudflare
-from flask import Flask, request, jsonify
+from flask import Flask, request
 import tls_client
 import json
 
