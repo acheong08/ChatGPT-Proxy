@@ -26,8 +26,8 @@ context = {"blocked": False}
 ) = Cloudflare().get_cf_cookies()
 
 
-@app.route("/backend-api/conversation", methods=["POST"])
-def conversation():
+@app.route("/<path:subpath>", methods=["POST", "GET"])
+def conversation(subpath: str):
     try:
         if context.get("blocked"):
             return jsonify({"error": "Blocking operation in progress"})
@@ -38,8 +38,6 @@ def conversation():
                 "__Secure-next-auth.session-token"
             ),
         }
-        # Get JSON payload from request
-        payload = request.get_json()
 
         # Set user agent
         headers = {
@@ -50,17 +48,25 @@ def conversation():
             "X-Openai-Assistant-App-Id": "",
             "Connection": "close",
             "Accept-Language": "en-US,en;q=0.9",
-            "Referer": "https://chat.openai.com/chat",
+            "Referer": "https://chat.openai.com/" + "chat",
         }
 
         # Send request to OpenAI
-        response = session.post(
-            url="https://chat.openai.com/backend-api/conversation",
-            headers=headers,
-            cookies=cookies,
-            data=json.dumps(payload),
-            timeout_seconds=360,
-        )
+        if request.method == "POST":
+            response = session.post(
+                url="https://chat.openai.com/" + subpath,
+                headers=headers,
+                cookies=cookies,
+                data=json.dumps(request.get_json()),
+                timeout_seconds=360,
+            )
+        elif request.method == "GET":
+            response = session.get(
+                url="https://chat.openai.com/" + subpath,
+                headers=headers,
+                cookies=cookies,
+                timeout_seconds=360,
+            )
 
         # Check status code
         if response.status_code == 403:
@@ -78,10 +84,13 @@ def conversation():
                 }
             )
         # Return response
+        print(response.text)
         return response.text
     except Exception as exc:
         return jsonify({"error": str(exc)})
 
 
+
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False)
