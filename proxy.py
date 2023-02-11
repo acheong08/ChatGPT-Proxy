@@ -24,8 +24,8 @@ if virtualdisplay:
     disp = Display()
 
 session = tls_client.Session(client_identifier="chrome_108", )
-
-session.proxies.update(http=PROXY, https=PROXY)
+if PROXY:
+    session.proxies.update(http=PROXY, https=PROXY)
 authentication = {}
 
 context = {"blocked": False}
@@ -105,7 +105,7 @@ if __name__ == "__main__":
     # open a virtual display to do that!
 
     uvicorn.run(
-        WsgiToAsgi(app), host="0.0.0.0", port=5000,
+        WsgiToAsgi(app), host=config['server']['host'], port=config['server']['port'],
         server_header=False)  # start a high-performance server with Uvicorn
 
 if virtualdisplay and disp is not None:

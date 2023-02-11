@@ -1,5 +1,9 @@
 {
     "proxy": "[YOUR PROXY, ex. http://127.0.0.1:12345 or socks5://xxx.xxx.xxx.xxx:xxxx]",
     "virtualdisplay": false,
-    "virtualdisplay__comments__": "If the script is running on your server or anything alike (with no screen - X interfaces), please turn this feature on"
+    "virtualdisplay__comments__": "If the script is running on your server or anything alike (with no screen - X interfaces), please turn this feature on",
+    "server": {
+        "host": "0.0.0.0",
+        "port": 5000
+    }
 }
