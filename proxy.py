@@ -15,6 +15,13 @@ session = tls_client.Session(
     client_identifier="chrome_108",
 )
 
+session.proxies.update(
+    {
+        "http": "http://185.199.229.156:7492",
+        "https": "https://185.199.229.156:7492",
+    }
+)
+
 authentication = {}
 
 context = {"blocked": False}
@@ -23,7 +30,7 @@ context = {"blocked": False}
 (
     authentication["cf_clearance"],
     authentication["user_agent"],
-) = Cloudflare().get_cf_cookies()
+) = Cloudflare(proxy="socks5://185.199.229.156:7492").get_cf_cookies()
 
 
 @app.route("/<path:subpath>", methods=["POST", "GET"])
@@ -68,6 +75,8 @@ def conversation(subpath: str):
                 timeout_seconds=360,
             )
 
+        print(response.text)
+
         # Check status code
         if response.status_code == 403:
             # Get cf_clearance again
@@ -75,7 +84,7 @@ def conversation(subpath: str):
             (
                 authentication["cf_clearance"],
                 authentication["user_agent"],
-            ) = Cloudflare().get_cf_cookies()
+            ) = Cloudflare(proxy="socks5://185.199.229.156:7492").get_cf_cookies()
             context["blocked"] = False
             # return error
             return jsonify(
@@ -88,8 +97,6 @@ def conversation(subpath: str):
         return response.text
     except Exception as exc:
         return jsonify({"error": str(exc)})
-
-
 
 
 if __name__ == "__main__":
