@@ -35,6 +35,8 @@ context = {"blocked": False}
 
 @app.route("/<path:subpath>", methods=["POST", "GET"])
 def conversation(subpath: str):
+    if request.headers.get("Authorization") is None:
+        return jsonify({"error": "Missing Authorization header"})
     try:
         if context.get("blocked"):
             return jsonify({"error": "Blocking operation in progress"})
