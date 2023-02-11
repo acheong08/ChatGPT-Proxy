@@ -1,0 +1,43 @@
+name: "Build Artifacts"
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-for-windows:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+      - name: "Install required packages"
+        run: pip install OpenAIAuth PyInstaller
+      - name: "Build artifact"
+        run: python -m PyInstaller -F proxy.py
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v3.1.2
+        with:
+          name: "Proxy executable for Windows"
+          path: ./dist/proxy.exe
+
+  build-for-linux:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: "Install required packages"
+        run: pip install OpenAIAuth PyInstaller
+      - name: "Build artifact"
+        run: python -m PyInstaller -F proxy.py
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v3.1.2
+        with:
+          name: "Proxy executable for Linux"
+          path: ./dist/proxy
