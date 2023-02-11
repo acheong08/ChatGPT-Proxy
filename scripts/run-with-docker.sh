@@ -1,0 +1,1 @@
+docker run -it --rm -v $(pwd)/config.json:/app/config.json:ro fred913/chatgpt_proxy:latest

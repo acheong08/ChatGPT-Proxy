@@ -15,13 +15,11 @@ session = tls_client.Session(
     client_identifier="chrome_108",
 )
 
-session.proxies.update(
-    {
-        "http": "socks5://185.199.229.156:7492",
-        "https": "socks5://185.199.229.156:7492",
-    }
+session = tls_client.Session(
+    client_identifier="chrome_108",
 )
-
+if PROXY:
+    session.proxies.update(http=PROXY, https=PROXY)
 authentication = {}
 
 context = {"blocked": False}
@@ -99,4 +97,14 @@ def conversation(subpath: str):
 
 
 if __name__ == "__main__":
-    app.run(debug=False)
+    # open a virtual display to do that!
+
+    uvicorn.run(
+        WsgiToAsgi(app),
+        host=config["server"]["host"],
+        port=config["server"]["port"],
+        server_header=False,
+    )  # start a high-performance server with Uvicorn
+
+if virtualdisplay and disp is not None:
+    disp.stop()
