@@ -8,8 +8,15 @@ openaiauth = "*"
 uvicorn = "*"
 asgiref = "*"
 undetected_chromedriver = "*"
+flask = "*"
+tls_client = "*"
+pyvirtualdisplay = "*"
 
 [dev-packages]
+yapf = "*"
 
 [requires]
-python_version = "3.10"
+python_version = "3"
+
+[scripts]
+proxy = "python proxy.py"
