@@ -20,8 +20,8 @@ session = tls_client.Session(
 
 session.proxies.update(
     {
-        "http": "http://185.199.229.156:7492",
-        "https": "https://185.199.229.156:7492",
+        "http": "socks5://185.199.229.156:7492",
+        "https": "socks5://185.199.229.156:7492",
     }
 )
 
