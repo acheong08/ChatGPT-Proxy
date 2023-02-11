@@ -2,6 +2,11 @@
 
 distribution=$(grep -Ei '^ID=' /etc/os-release | awk -F= '{print $2}')
 
+if ! command -v sudo &>/dev/null; then
+    # Docker container usually does not have a sudo command
+    alias sudo=""
+fi
+
 install_git() {
     case "$distribution" in
     ubuntu | debian)
@@ -48,6 +53,27 @@ install_chromium() {
     esac
 }
 
+install_python3() {
+    case "$distribution" in
+    ubuntu | debian)
+        sudo apt-get update
+        sudo apt-get install -y python3
+        ;;
+    centos)
+        sudo yum update
+        sudo yum install -y python3
+        ;;
+    fedora)
+        sudo dnf update
+        sudo dnf install -y python3
+        ;;
+    *)
+        echo "Unsupported distribution. Please install Python 3 manually."
+        exit 1
+        ;;
+    esac
+}
+
 if ! command -v git &>/dev/null; then
     echo Installing Git
     install_git
@@ -58,7 +84,7 @@ if ! command -v chrome &>/dev/null; then
 fi
 
 if [ -d "~/.local/shared/chatgpt-proxy-service" ]; then
-    echo -e "Found existing ChatGPT-Proxy. Removing..."
+    echo "Found existing ChatGPT-Proxy. Removing..."
     rm -rf ~/.local/shared/chatgpt-proxy-service
 fi
 mkdir -p ~/.local/shared/chatgpt-proxy-service
@@ -70,19 +96,20 @@ cd ~/.local/shared/chatgpt-proxy-service
 if command -v pip3 &>/dev/null; then
     pip3 install -U pipenv
 else
-    if command -v python3 &>/dev/null; then
-        python3 -m pip install -U pipenv
+    if ! command -v python3 &>/dev/null; then
+        install_python3
     fi
+    python3 -m pip install -U pipenv
 fi
 
 if ! command -v pipenv &>/dev/null; then
-    echo -e "Pipenv not installed. Please install it manually..."
+    echo "Pipenv not installed. Please install it manually..."
     exit 1
 fi
 
 pipenv update
 # pipenv run proxy
-echo -e "\n\nalias chatgptproxy=\"bash -c \\\"cd ~/.local/shared/chatgpt-proxy-service && pipenv run proxy\\\"\"\n\n" >~/.profile
-echo -e "\n\nalias chatgptproxy=\"bash -c \\\"cd ~/.local/shared/chatgpt-proxy-service && pipenv run proxy\\\"\"\n\n" >~/.bashrc
+echo "\n\nalias chatgptproxy=\"bash -c \\\"cd ~/.local/shared/chatgpt-proxy-service && pipenv run proxy\\\"\"\n\n" >~/.profile
+echo "\n\nalias chatgptproxy=\"bash -c \\\"cd ~/.local/shared/chatgpt-proxy-service && pipenv run proxy\\\"\"\n\n" >~/.bashrc
 
-echo -e "Installation successful! Use 'chatgptproxy' command to start up."
+echo "Installation successful! Use 'chatgptproxy' command to start up."
