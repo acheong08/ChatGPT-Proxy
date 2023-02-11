@@ -2,12 +2,15 @@
 Fetches cookies from chat.openai.com and returns them (Flask)
 """
 import json
-
 import tls_client
+import uvicorn
+
 from flask import Flask
 from flask import jsonify
 from flask import request
 from OpenAIAuth.Cloudflare import Cloudflare
+from asgiref.proxy import WsgiToAsgi
+
 
 app = Flask(__name__)
 
@@ -99,4 +102,5 @@ def conversation(subpath: str):
 
 
 if __name__ == "__main__":
-    app.run(debug=False)
+    # app.run(debug=False)
+    uvicorn.run(WsgiToAsgi(app), host="0.0.0.0", port=5000, server_header=False)
