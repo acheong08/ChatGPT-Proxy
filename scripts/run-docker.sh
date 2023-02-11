@@ -1,1 +1,1 @@
-docker run --rm -it --volume /data/cgpt-proxy:/data ubuntu:latest bash -c "apt update && apt install python3 xvfb chromium-browser python3-pip -y && pip3 install pipenv && pipenv update -d && xvfb-run pipenv run python proxy.py"
+docker run --rm -it ubuntu:latest bash -c "apt update && apt install curl -y && curl https://raw.githubusercontent.com/fred913/ChatGPT-Proxy/main/scripts/run-linux.sh | sh"

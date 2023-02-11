@@ -1,20 +1,18 @@
 #!/bin/sh
 
-# Check for the distribution
-distribution=$(lsb_release -is)
+distribution=$(grep -Ei '^ID=' /etc/os-release | awk -F= '{print $2}')
 
-# Function to install git with https support on different distributions
 install_git() {
     case "$distribution" in
-    Ubuntu | Debian)
+    ubuntu | debian)
         sudo apt-get update
         sudo apt-get install -y git libcurl4-gnutls-dev libexpat1-dev gettext libz-dev libssl-dev
         ;;
-    CentOS)
+    centos)
         sudo yum update
         sudo yum install -y git curl-devel expat-devel gettext-devel openssl-devel zlib-devel
         ;;
-    Fedora)
+    fedora)
         sudo dnf update
         sudo dnf install -y git curl-devel expat-devel gettext-devel openssl-devel zlib-devel
         ;;
@@ -25,10 +23,9 @@ install_git() {
     esac
 }
 
-# Function to install Chromium browser on different distributions
 install_chromium() {
     case "$distribution" in
-    Ubuntu | Debian)
+    ubuntu | debian)
         architecture=$(dpkg --print-architecture)
         chrome_deb="google-chrome-stable_current_${architecture}.deb"
         wget https://dl.google.com/linux/direct/$chrome_deb
@@ -36,7 +33,7 @@ install_chromium() {
         sudo apt-get install -y -f
         rm $chrome_deb
         ;;
-    CentOS)
+    centos)
         # Create the Chrome repository
         sudo sh -c "echo '[google-chrome]\nname=google-chrome\nbaseurl=http://dl.google.com/linux/chrome/rpm/stable/\$basearch\nenabled=1\ngpgcheck=1\ngpgkey=https://dl-ssl.google.com/linux/linux_signing_key.pub' > /etc/yum.repos.d/google-chrome.repo"
 
@@ -51,8 +48,14 @@ install_chromium() {
     esac
 }
 
-install_git
-install_chromium
+if ! command -v git &>/dev/null; then
+    echo Installing Git
+    install_git
+fi
+if ! command -v chrome &>/dev/null; then
+    echo Installing Chromium | Chrome
+    install_chromium
+fi
 
 if [ -d "~/.local/shared/chatgpt-proxy-service" ]; then
     echo -e "Found existing ChatGPT-Proxy. Removing..."
@@ -78,4 +81,5 @@ if ! command -v pipenv &>/dev/null; then
 fi
 
 pipenv update
-pipenv run proxy
+# pipenv run proxy
+echo -e "\n\nalias chatgptproxy=\"bash -c \\\"cd ~/.local/shared/chatgpt-proxy-service && pipenv run proxy\\\"\"\n\n"
