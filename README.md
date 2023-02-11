@@ -1,6 +1,7 @@
 # ChatGPT-Proxy
-Forward requests and inject cloudflare cookies
+Forward requests and inject CloudFlare cookies
 
 ## Installation
 
-script: `curl https://raw.githubusercontent.com/fred913/ChatGPT-Proxy/main/scripts/run-linux.sh | sh`
+Direct install: `curl https://raw.githubusercontent.com/fred913/ChatGPT-Proxy/main/scripts/run-linux-2.sh | sh`
+With Docker: `curl https://raw.githubusercontent.com/fred913/ChatGPT-Proxy/main/scripts/run-docker.sh | sh`
