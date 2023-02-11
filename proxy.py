@@ -77,8 +77,6 @@ def conversation(subpath: str):
                 timeout_seconds=360,
             )
 
-        print(response.text)
-
         # Check status code
         if response.status_code == 403:
             # Get cf_clearance again
@@ -95,7 +93,6 @@ def conversation(subpath: str):
                 }
             )
         # Return response
-        print(response.text)
         return response.text
     except Exception as exc:
         return jsonify({"error": str(exc)})
