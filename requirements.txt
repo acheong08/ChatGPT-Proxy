@@ -2,3 +2,5 @@ flask
 tls_client
 OpenAIAuth
 undetected_chromedriver
+uvicorn
+asgiref
