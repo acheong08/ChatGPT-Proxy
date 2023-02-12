@@ -2,6 +2,7 @@
 Fetches cookies from chat.openai.com and returns them (Flask)
 """
 import json
+import os
 import tls_client
 import uvicorn
 
@@ -10,22 +11,17 @@ from flask import Flask
 from flask import jsonify
 from flask import request
 from OpenAIAuth.Cloudflare import Cloudflare
-from pyvirtualdisplay import Display
 
-with open("./config.json", "r", encoding="utf-8") as f:
-    config = json.load(f)
-    PROXY = config['proxy']
-    virtualdisplay = config['virtualdisplay']
+GPT_PROXY = os.getenv('GPT_PROXY')
+GPT_HOST = os.getenv('GPT_HOST', '0.0.0.0')
+GPT_PORT = int(os.getenv('GPT_PORT', 5000))
 
 app = Flask(__name__)
 
-disp = None
-if virtualdisplay:
-    disp = Display()
-
 session = tls_client.Session(client_identifier="chrome_108", )
-if PROXY:
-    session.proxies.update(http=PROXY, https=PROXY)
+if GPT_PROXY:
+    session.proxies.update(http=GPT_PROXY, https=GPT_PROXY)
+
 authentication = {}
 
 context = {"blocked": False}
@@ -34,7 +30,7 @@ context = {"blocked": False}
 (
     authentication["cf_clearance"],
     authentication["user_agent"],
-) = Cloudflare(proxy=PROXY).get_cf_cookies()
+) = Cloudflare(proxy=GPT_PROXY).get_cf_cookies()
 
 
 @app.route("/<path:subpath>", methods=["POST", "GET"])
@@ -88,7 +84,7 @@ def conversation(subpath: str):
             (
                 authentication["cf_clearance"],
                 authentication["user_agent"],
-            ) = Cloudflare(proxy=PROXY).get_cf_cookies()
+            ) = Cloudflare(proxy=GPT_PROXY).get_cf_cookies()
             context["blocked"] = False
             # return error
             return jsonify({
@@ -102,13 +98,8 @@ def conversation(subpath: str):
 
 
 if __name__ == "__main__":
-    # open a virtual display to do that!
-
     uvicorn.run(
         WsgiToAsgi(app),
-        host=config['server']['host'],
-        port=config['server']['port'],
+        host=GPT_HOST,
+        port=GPT_PORT,
         server_header=False)  # start a high-performance server with Uvicorn
-
-if virtualdisplay and disp is not None:
-    disp.stop()

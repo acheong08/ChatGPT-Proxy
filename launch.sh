@@ -2,4 +2,4 @@
 
 cd "$(dirname "$0")"
 
-pipenv run proxy
+xvfb-run pipenv run proxy

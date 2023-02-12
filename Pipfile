@@ -10,7 +10,6 @@ asgiref = "*"
 undetected_chromedriver = "*"
 flask = "*"
 tls_client = "*"
-pyvirtualdisplay = "*"
 
 [dev-packages]
 yapf = "*"
