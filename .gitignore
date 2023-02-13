@@ -125,4 +125,4 @@ dmypy.json
 .pyre/
 
 # for this project
-/config.json
+env

@@ -1,0 +1,11 @@
+services:
+  app:
+    image: devmitrandir/chatgpt-proxy:latest
+    container_name: chatgpt-proxy
+    # Optional:
+    # environment:
+    #   - GPT_PROXY=
+    #   - GPT_HOST=0.0.0.0
+    #   - GPT_PORT=5000
+    ports:
+      - "5000:5000"
