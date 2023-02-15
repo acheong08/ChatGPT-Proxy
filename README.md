@@ -1,6 +1,8 @@
 # ChatGPT-Proxy
 Forward requests and inject CloudFlare cookies
 
+# > Unmaintained 
+
 ## Installation
 
 ### One-click scripts 
